@@ -54,7 +54,6 @@ export default function PizzaForm() {
       };
 
       const result = await postOrder(payload).unwrap();
-      console.log(result)
 
     dispatch({ type: RESET_FORM });
     } catch (error) {
