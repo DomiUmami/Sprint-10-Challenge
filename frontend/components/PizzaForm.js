@@ -1,9 +1,8 @@
 import React, { useReducer } from 'react'
-import { usePostOrderMutation } from '../state/pizzaApi'
+import { useGetHistoryQuery, usePostOrderMutation } from '../state/pizzaApi'
 
 const RESET_FORM = 'RESET_FORM'
 const CHANGE_INPUT = 'CHANGE_INPUT'
-
 
 
 const initialFormState = { // suggested
@@ -30,15 +29,15 @@ const reducer = (state, action) => {
       return state
   }
 }
-
 export default function PizzaForm() {
   const [state, dispatch] = useReducer(reducer, initialFormState)
-  const [postOrder, { isLoading, error: postOrderError }] = usePostOrderMutation()
+  const [postOrder, { isLoading, isFetching, error: postOrderError }] = usePostOrderMutation()
 
 	const handleChange = (evt) => {
-		const { name, value } = evt.target
-		dispatch ({ type: CHANGE_INPUT, payload: { name, value } })
-}
+    const { name, type, checked, value } = evt.target;
+    const newValue = type === 'checkbox' ? checked : value;
+    dispatch({ type: CHANGE_INPUT, payload: { name, value: newValue } });
+  }
 	const resetForm = () => {
 		dispatch({ type: RESET_FORM })
 }
@@ -60,7 +59,7 @@ export default function PizzaForm() {
   return (
     <form onSubmit={onNewOrder}>
       <h2>Pizza Form</h2>
-      {isLoading && <div className='pending'>Order in progress...</div>}
+      {(isFetching || isLoading) && <div className='pending'>Order in progress...</div>}
       {postOrderError && <div className='failure'>{'Order failed: ' + postOrderError.data.message}</div>}
 
 

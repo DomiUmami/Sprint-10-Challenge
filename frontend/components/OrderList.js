@@ -1,22 +1,19 @@
-import React from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useState } from 'react'
 import { useGetHistoryQuery } from '../state/pizzaApi'
 
 
 export default function OrderList() {
   const { data: orders } = useGetHistoryQuery()
+  const [filteredSize, setFilteredSize] = useState('All')
   
-  const handleFilterClick = (evt) => {
-    
-  }
+  const filteredOrders = filteredSize === 'All' ? orders : orders?.filter(order => order.size === filteredSize)
 
-  
   return (
     <div id="orderList">
       <h2>Pizza Orders</h2>
       <ol>
         {
-          orders?.map(order => {
+          filteredOrders?.map(order => {
             return (
               <li key={order.id}>
                 <div>
@@ -35,8 +32,9 @@ export default function OrderList() {
             return <button
               data-testid={`filterBtn${size}`}
               className={className}
-              onClick={() => handleFilterClick(size)}
-              key={size}>{size}</button>
+              key={size}
+              onClick={() => setFilteredSize(size)}
+              >{size}</button>
           })
         }
       </div>

@@ -33,5 +33,5 @@ export const pizzaApi = createApi({
 })
 
 export const {
-    useGetHistoryQuery, usePostOrderMutation,
+    useGetHistoryQuery, usePostOrderMutation, 
 } = pizzaApi
