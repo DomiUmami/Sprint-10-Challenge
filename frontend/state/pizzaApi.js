@@ -29,16 +29,9 @@ export const pizzaApi = createApi({
             }),
             invalidatesTags: ['Orders'],
         }),
-        toggleOrder: builder.mutation({
-            query: ({ size }) => ({
-              url: `toggleOrder?size=${size}`,
-              method: 'PUT',
-            }),
-            invalidatesTags: ['Orders'],
-        }),
     })
 })
 
 export const {
-    useGetHistoryQuery, usePostOrderMutation, useToggleOrderMutation,
+    useGetHistoryQuery, usePostOrderMutation,
 } = pizzaApi

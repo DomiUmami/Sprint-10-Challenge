@@ -33,7 +33,7 @@ const reducer = (state, action) => {
 
 export default function PizzaForm() {
   const [state, dispatch] = useReducer(reducer, initialFormState)
-  const [postOrder, { error: postOrderError }] = usePostOrderMutation()
+  const [postOrder, { isLoading, error: postOrderError }] = usePostOrderMutation()
 
 	const handleChange = (evt) => {
 		const { name, value } = evt.target
@@ -44,8 +44,9 @@ export default function PizzaForm() {
 }
 	const onNewOrder = (evt) => {
 		evt.preventDefault()
-		const { fullName, size, toppings } = state
-    postOrder({ fullName, size, toppings})
+		const { fullName, size } = state
+    const selectedToppings = Object.keys(state).filter(key => key !== 'fullName' && key !== 'size' && state[key])
+    postOrder({ fullName, size, toppings: selectedToppings })
     .unwrap()
     .then(data => {
       console.log(data)
@@ -59,7 +60,7 @@ export default function PizzaForm() {
   return (
     <form onSubmit={onNewOrder}>
       <h2>Pizza Form</h2>
-      {false && <div className='pending'>Order in progress...</div>}
+      {isLoading && <div className='pending'>Order in progress...</div>}
       {postOrderError && <div className='failure'>{'Order failed: ' + postOrderError.data.message}</div>}
 
 
