@@ -1,9 +1,9 @@
 import React, { useReducer } from 'react'
 import { usePostOrderMutation } from '../state/pizzaApi'
 
-const CHANGE_INPUT = 'CHANGE_INPUT'
 const RESET_FORM = 'RESET_FORM'
-const SET_ERROR = 'SET_ERROR'
+const CHANGE_INPUT = 'CHANGE_INPUT'
+
 
 
 const initialFormState = { // suggested
@@ -19,7 +19,7 @@ const initialFormState = { // suggested
 
 
 const reducer = (state, action) => {
-  switch (action.type){
+    switch (action.type){
     case CHANGE_INPUT:
       return { ...state, [action.payload.name]: action.payload.value}
     case RESET_FORM:
@@ -35,51 +35,32 @@ export default function PizzaForm() {
   const [state, dispatch] = useReducer(reducer, initialFormState)
   const [postOrder, { error: postOrderError }] = usePostOrderMutation()
 
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const { fullName, size } = state
-      if (!fullName || !size) {
-        throw new Error('Full name and size are required');
-      }
-      const toppings = Object.entries(state)
-        .filter(([key, value]) => key !== 'fullName' && key !== 'size' && value === true)
-        .map(([key]) => key);
-
-      const payload = {
-        fullName,
-        size,
-        toppings,
-      };
-
-      const result = await postOrder(payload).unwrap();
-
-    dispatch({ type: RESET_FORM });
-    } catch (error) {
-      let errorMessage;
-      if (!state.fullName && !state.size) {
-        errorMessage = 'Full name and size are required'
-      } else if (!state['fullName']) {
-        errorMessage = 'Full name is required'
-      } else {
-        errorMessage = 'Size is required'
-      }
-      dispatch({ type: SET_ERROR, payload: errorMessage })
-    }
-  }
-
-  const handleChange = (event) => {
-    const { name, value, type, checked } = event.target;
-    const payload = type === 'checkbox' ? checked : value;
-    dispatch({ type: CHANGE_INPUT, payload: { name, value: payload } });
-  }
+	const handleChange = (evt) => {
+		const { name, value } = evt.target
+		dispatch ({ type: CHANGE_INPUT, payload: { name, value } })
+}
+	const resetForm = () => {
+		dispatch({ type: RESET_FORM })
+}
+	const onNewOrder = (evt) => {
+		evt.preventDefault()
+		const { fullName, size, toppings } = state
+    postOrder({ fullName, size, toppings})
+    .unwrap()
+    .then(data => {
+      console.log(data)
+      resetForm()
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={onNewOrder}>
       <h2>Pizza Form</h2>
       {false && <div className='pending'>Order in progress...</div>}
-      {postOrderError && <div className='failure'>{'Order failed: ' + postOrderError}</div>}
+      {postOrderError && <div className='failure'>{'Order failed: ' + postOrderError.data.message}</div>}
 
 
       <div className="input-group">

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { useGetHistoryQuery } from '../state/pizzaApi';
+import { useGetHistoryQuery, usePostOrderMutation } from '../state/pizzaApi';
 
 export default function OrderList() {
-  const { data: orders, isLoading } = useGetHistoryQuery();
-  const [activeFilter, setActiveFilter] = useState('All');
+  const {
+     data: orders, isLoading } = useGetHistoryQuery()
+
+     
+  const [activeFilter, setActiveFilter] = useState('All')
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  console.log(orders)
 
   const filteredOrders = activeFilter === 'All' ? orders : orders.filter(order => order.size === activeFilter);
 
@@ -21,7 +23,6 @@ export default function OrderList() {
       <h2>Pizza Orders</h2>
       <ol>
         {filteredOrders.map((order, index) => {
-          console.log(order.size)
           return (<li key={index}>
             <div>
             {order.customer} ordered a size {order.size} with {order.toppings ? (order.toppings.length > 0 ? `${order.toppings.length} topping${order.toppings.length !== 1 ? 's' : ''}` : 'no toppings') : 'no toppings'}
@@ -32,7 +33,6 @@ export default function OrderList() {
       <div id="sizeFilters">
         Filter by size:
         {['All', 'S', 'M', 'L'].map(size => {
-          console.log(size)
           const className = `button-filter${size === activeFilter ? ' active' : ''}`;
           return (
             <button
